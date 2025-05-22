@@ -1,0 +1,57 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve() {
+    int n, m; cin>>n>>m;
+    vector<vector<int>> grid(n, vector<int>(m));
+    for(auto &row : grid) for(auto &e : row) cin>>e;
+
+    vector<pair<int, int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    vector<vector<bool>> vis(n, vector<bool>(m));
+    vector<vector<int>> up(n, vector<int>(m));
+    vector<vector<int>> h(n, vector<int>(m));
+    set<pair<int, int>> articulationPoints;
+    auto dfs = [&] (auto dfs, int x, int y, int px = -1, int py = -1) -> void {
+        vis[x][y] = 1;
+        up[x][y] = h[x][y];
+        int children = 0;
+        for(auto &[dx, dy] : dirs) {
+            int nx = x+dx, ny = y+dy;
+            if(nx < 0 || ny < 0 || nx > n-1 || ny > m-1 || (nx == px && ny == py) || !grid[nx][ny]) 
+                continue;
+            if(!vis[nx][ny]) {
+                children++;
+                h[nx][ny] = h[x][y]+1;
+                dfs(dfs, nx, ny, x, y);
+                up[x][y] = min(up[x][y], up[nx][ny]);
+                if(px != -1 && up[nx][ny] >= h[x][y])
+                    articulationPoints.insert({x, y});
+            } else {
+                up[x][y] = min(up[x][y], h[nx][ny]);
+            }
+        }
+        if(px == -1 && children > 1)
+            articulationPoints.insert({x, y});
+    };
+    int cnt = 0;
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < m; j++) {
+            if(grid[i][j] && !vis[i][j]) {
+                cnt++;
+                dfs(dfs, i, j, i, j);
+                // debug(i, j)
+            }
+        }
+    }
+    cout << cnt << "\n";
+
+
+} 
+
+int main() {
+    ios::sync_with_stdio(0); cin.tie(0);
+    int t = 1;
+    // cin >> t;
+    while(t--) solve();
+    return 0;
+}
