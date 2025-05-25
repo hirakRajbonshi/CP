@@ -1,3 +1,11 @@
+template<class T>
+T power(T a, int b) {
+    T res = 1;
+    for(; b; b >>= 1, a *= a)
+        if(b & 1) res *= a;
+    return res;
+}
+
 template<int mod = 998244353>
 struct mint
 {
