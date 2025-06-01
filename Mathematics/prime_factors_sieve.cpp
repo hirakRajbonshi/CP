@@ -15,7 +15,7 @@ void sieve(int N) {
 
 // SPF
 const int N = 2e5 + 10;
-vector<int> spf(N);
+vector<int> spf(N + 1);
 void pre() {
     iota(spf.begin(), spf.end(), 0);
     for(int i = 2; i*i <= N; i++) {
