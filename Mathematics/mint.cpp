@@ -184,4 +184,4 @@ struct Factorials
 };
 const int m = 1e9 + 7;
 using Mint = mint<m>;
-// Factorials F(5e5 + 10);
+// Factorials<m> F(5e5 + 10);
