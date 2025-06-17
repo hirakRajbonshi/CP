@@ -1,0 +1,19 @@
+#!/bin/bash
+
+N=$1
+path=$2
+
+if [ -z "$N" ] || [ -z "$path" ]; then
+    echo "Usage: ./script.sh <N> <path>"
+    exit 1
+fi
+
+g++ "$path/gen.cpp" -o "$path/gen" || { echo "Compilation failed"; exit 1; }
+
+for (( i=1; i<=N; i++ ))
+do
+    ./gen $i > $path/test$i.txt
+    echo "Test $i generated!"
+done
+
+echo "Execution completed!"

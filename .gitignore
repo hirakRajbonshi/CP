@@ -1,3 +1,11 @@
+#ignore all the .txt and .exe files
 *.txt
 *.exe
+
+#ignore all the files inside this 
+problem_create/2025/*
+
+#but do not ignore these two files
+!problem_create/2025/gen
+!problem_create/2025/main
 
