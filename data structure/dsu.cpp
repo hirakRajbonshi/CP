@@ -43,3 +43,39 @@ struct DSU {
     }
 
 };
+
+
+
+
+// by size
+struct DSU {
+    int n; 
+    vector<int> p;
+    vector<int> size;
+
+    DSU(int _n) {
+        n = _n;
+        p.resize(n);
+        iota(p.begin(), p.end(), 0);
+        size.assign(n, 1);
+    }
+
+    int get(int x) {
+        return x == p[x] ? x : (p[x] = get(p[x]));
+    }
+
+    bool merge(int x, int y) {
+        x = get(x), y = get(y);
+        if(x == y) return false;
+        size[x] += size[y];
+        p[y] = x;
+        return true;
+    }
+
+    int get_size(int x) {return size[get(x)];}
+};
+
+
+
+
+

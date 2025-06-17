@@ -12,20 +12,22 @@ void sieve(int N) {
     }
     return ret;
 }
-vector<int> spf(int n) {
-    vector<int> ret(n+1, 0);
-    iota(ret.begin(), ret.end(), 0);
-    for(int i = 2; i*i <= n; i++) {
-        if(ret[i] == i) {
-            for(int j = i*i; j <= n; j += i) {
-                if(ret[j] == j) {
-                    ret[j] = i;
+
+// SPF
+const int N = 2e5 + 10;
+vector<int> spf(N + 1);
+void pre() {
+    iota(spf.begin(), spf.end(), 0);
+    for(int i = 2; i*i <= N; i++) {
+        if(spf[i] == i) {
+            for(int j = i*i; j <= N; j += i) {
+                if(spf[j] == j) {
+                    spf[j] = i;
                 }
             }
         }
     }
-    return ret;
-} 
+};
 
 
 // function to count number of numbers from 1 to n which are coprime with x

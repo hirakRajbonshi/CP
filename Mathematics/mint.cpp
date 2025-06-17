@@ -1,10 +1,17 @@
-// const int mod = 1000000007;
-const int mod = 998244353;
-struct Mint
+template<class T>
+T power(T a, int b) {
+    T res = 1;
+    for(; b; b >>= 1, a *= a)
+        if(b & 1) res *= a;
+    return res;
+}
+
+template<int mod = 998244353>
+struct mint
 {
     int x;
-    Mint() : x(0) {}
-    Mint(int _x)
+    mint() : x(0) {}
+    mint(int _x)
     {
         _x %= mod;
         if (_x < 0)
@@ -14,98 +21,98 @@ struct Mint
 
     int val() { return x; }
 
-    Mint &operator++()
+    mint &operator++()
     {
         x++;
         if (x == mod)
             x = 0;
         return *this;
     }
-    Mint &operator--()
+    mint &operator--()
     {
         if (!x)
             x = mod;
         x--;
         return *this;
     }
-    Mint &operator+=(const Mint &other)
+    mint &operator+=(const mint &other)
     {
         x += other.x;
         if (x >= mod)
             x -= mod;
         return *this;
     }
-    Mint &operator-=(const Mint &other)
+    mint &operator-=(const mint &other)
     {
         x -= other.x;
         if (x < 0)
             x += mod;
         return *this;
     }
-    Mint &operator*=(const Mint &other)
+    mint &operator*=(const mint &other)
     {
         x = x * other.x % mod;
         return *this;
     }
-    Mint &operator/=(const Mint &other)
+    mint &operator/=(const mint &other)
     {
         return *this *= other.inv();
     }
-    Mint operator+() const
+    mint operator+() const
     {
         return *this;
     }
-    Mint operator-() const
+    mint operator-() const
     {
-        return Mint() - *this;
+        return mint() - *this;
     }
 
     //
-    Mint operator+(const Mint &other) const
+    mint operator+(const mint &other) const
     {
-        return Mint(*this) += other;
+        return mint(*this) += other;
     }
-    Mint operator-(const Mint &other) const
+    mint operator-(const mint &other) const
     {
-        return Mint(*this) -= other;
+        return mint(*this) -= other;
     }
-    Mint operator*(const Mint &other) const
+    mint operator*(const mint &other) const
     {
-        return Mint(*this) *= other;
+        return mint(*this) *= other;
     }
-    Mint operator/(const Mint &other) const
+    mint operator/(const mint &other) const
     {
-        return Mint(*this) /= other;
+        return mint(*this) /= other;
     }
 
-    bool operator==(const Mint &other) const
+    bool operator==(const mint &other) const
     {
         return x == other.x;
     }
-    bool operator!=(const Mint &other) const
+    bool operator!=(const mint &other) const
     {
         return x != other.x;
     }
-    bool operator>=(const Mint &other) const
+    bool operator>=(const mint &other) const
     {
         return x >= other.x;
     }
-    bool operator<=(const Mint &other) const
+    bool operator<=(const mint &other) const
     {
         return x <= other.x;
     }
-    bool operator>(const Mint &other) const
+    bool operator>(const mint &other) const
     {
         return x > other.x;
     }
-    bool operator<(const Mint &other) const
+    bool operator<(const mint &other) const
     {
         return x < other.x;
     }
-    Mint power(int p) const
+    mint power(int p) const
     {
         assert(p >= 0);
-        Mint b = *this, res = 1;
+        mint b = *this, res = 1;
         while (p)
         {
             if (p & 1)
@@ -115,20 +122,32 @@ struct Mint
         }
         return res;
     }
-    Mint inv() const
+    mint inv() const
     {
         assert(x);
         return power(mod - 2);
     }
-    friend ostream &operator<<(ostream &os, const Mint &m)
+    friend ostream &operator<<(ostream &os, const mint &m)
     {
         os << m.x;
         return os;
     }
+    friend istream &operator>>(istream &is, mint &m)
+    {
+        int val;
+        is >> val;
+        m = mint(val);
+        return is;
+    }
+    friend mint operator+(int lhs, const mint &rhs) { return mint(lhs) + rhs; }
+    friend mint operator-(int lhs, const mint &rhs) { return mint(lhs) - rhs; }
+    friend mint operator*(int lhs, const mint &rhs) { return mint(lhs) * rhs; }
+    friend mint operator/(int lhs, const mint &rhs) { return mint(lhs) / rhs; }
 };
-
+template<int mod = 998244353>
 struct Factorials
 {
+    using Mint = mint<mod>;
     int n;
     vector<Mint> fact, invf;
 
@@ -161,6 +180,8 @@ struct Factorials
         assert(n >= 0 || r >= 0 || n >= r);
         return fact[n] * invf[r];
     }
-};
 
-Factorials F(5e5 + 10);
+};
+const int m = 1e9 + 7;
+using Mint = mint<m>;
+// Factorials<m> F(5e5 + 10);
