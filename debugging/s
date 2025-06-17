@@ -1,0 +1,27 @@
+#!/bin/bash
+
+NUM_TEST_CASES=$1
+mkdir -p bin
+
+g++ gen.cpp -o "./bin/gen"
+g++ main.cpp -o "./bin/main"
+g++ brute.cpp -o "./bin/brute"
+
+while true; do
+    ./bin/gen $((++i)) > input.txt
+    ./bin/main < input.txt > output1.txt
+    ./bin/brute < input.txt > output2.txt
+
+    if ! diff -q output1.txt output2.txt > /dev/null; then
+        echo "Test case $i failed:"
+        cat input.txt
+        echo "main output:"
+        cat output1.txt
+        echo "brute output:"
+        cat output2.txt
+        echo "----"
+        break
+    else
+        echo "Test case $i passed"
+    fi
+done

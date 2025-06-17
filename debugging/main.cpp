@@ -1,60 +1,51 @@
-//HIRAK RAJBONSHI 2312020
+// HIRAK RAJBONSHI 2312020
 
 #include <bits/stdc++.h>
 using namespace std;
 
-#define md                  1000000007
-#define pb                  push_back
-#define endl                "\n"
-#define F                   first
-#define S                   second
-#define sz(x)               (int)(x).size()   
-#define inp(v)              for(auto &x: v) cin>>x  
-#define all(x)              (x).begin(), (x).end()
-#define rep(i, a, b)        for (int i = a; i < (b); ++i)
-#define fast_io             cin.tie(0)->sync_with_stdio(0);cin.exceptions(cin.failbit);
- 
-using ll  = long long;
-using ull = unsigned long long;
-using lld = long double;
-using pii = pair<int,int>;
-using pll = pair<ll,ll>;
-using vl  = vector<ll>;
-using vi  = vector<int>;
- 
+#define int long long
+#define ll long long
 
-void solve(){
-    string n;
+void solve()
+{
+    int n;
     cin >> n;
-    ll sum = 0, c2 = 0, c3 = 0;
-    for(auto i:n) {
-        ll x = i - '0';
-        if(x==2) c2++;
-        else if(x==3) c3++;
-        sum += x;
-    }
-    // c2 %= 9;
-    // c3 %= 9;
-    for(int i=0; i<=c2; i++) {
-        for(int j=0; j<=c3; j++) {
-            ll tm = sum + 2*i + 6*j;
-            if(tm%9==0) {
-                cout << "YES";
-                return;
+    string s;
+    cin >> s;
+    if (n == 1 && cout << s << "\n")
+        return;
+    string ans = "";
+    for (int i = 0; i < n - 1; i++)
+    {
+        if (s[i] > s[i + 1])
+        {
+            int j = i + 1;
+            while (j < n && s[j] <= s[i])
+            {
+                ans += s[j];
+                j++;
             }
+            ans += s[i];
+            while (j < n)
+            {
+                ans += s[j];
+                j++;
+            }
+            break;
         }
+        else
+            ans += s[i];
     }
-    cout << "NO";
-
+    if (ans.size() != n)
+        cout << s << "\n";
+    else
+        cout << ans << "\n";
 }
 
-
-int32_t main() {
-    freopen("input.txt", "r", stdin);
-    freopen("output1.txt", "w", stdout);
+int32_t main()
+{
+    // freopen("input.txt", "r", stdin);
+    // freopen("output1.txt", "w", stdout);
 
     solve();
-    cout << "\n";
-
-
 }
