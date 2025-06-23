@@ -13,6 +13,21 @@ void sieve(int N) {
     return ret;
 }
 
+const int N = 2e5 + 10;
+bool sieve[N + 1];
+vector<int> prime;
+void pre() {
+    memset(sieve, true, sizeof(sieve));
+    prime.reserve(20000);
+    sieve[0] = sieve[1] = false;
+    for(int i = 2; i * i <= N; i++) {
+        if(sieve[i]) {
+            for(int j = i * i; j <= N; j += i) sieve[j] = false;
+        }
+    }
+    for(int i = 2; i <= N; i++) if(sieve[i]) prime.push_back(i);
+}
+
 // SPF
 const int N = 2e5 + 10;
 vector<int> spf(N + 1);
