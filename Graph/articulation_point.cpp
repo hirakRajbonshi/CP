@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// Grid
 void solve() {
     int n, m; cin>>n>>m;
     vector<vector<int>> grid(n, vector<int>(m));
@@ -47,6 +48,41 @@ void solve() {
 
 
 } 
+// 
+void solve(int __tt = -1) {
+    int n, m; cin >> n >> m;
+    vector<vector<int>> adj(n);
+    for(int i = 0; i < m; i++) {
+        int u, v; cin >> u >> v;
+        u--, v--;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    vector<int> up(n), h(n, 0);
+    vector<bool> vis(n, false);
+    vector<pair<int, int>> bridges;
+    set<int> articulation_points;
+    auto dfs = [&] (auto dfs, int v, int p = -1) -> void {
+        vis[v] = true;
+        up[v] = h[v];
+        int children = 0;
+        for(auto &u : adj[v]) {
+            if(u == p) continue;
+            if(vis[u]) up[v] = min(up[v], h[u]);
+            else {
+                h[u] = h[v] + 1;    
+                dfs(dfs, u, v);
+                up[v] = min(up[v], up[u]);
+                if(up[u] >= h[v]) bridges.emplace_back(u, v); 
+                if(up[u] >= h[v] && ~p) articulation_points.insert(v);
+                children++;
+            }
+        }
+            if(p == -1 && children > 1) articulation_points.insert(v);
+    };
+    for(int i = 0; i < n; i++) if(!vis[i]) dfs(dfs, i);
+}
 
 int main() {
     ios::sync_with_stdio(0); cin.tie(0);
