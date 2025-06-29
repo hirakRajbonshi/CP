@@ -133,3 +133,49 @@ node query(int id, int l, int r, int lq, int rq) {
     int mid = (l+r)/2;
     return merge(query(id*2, l, mid, lq, rq), query(id*2+1, mid+1, r, lq, rq));
 }
+
+
+
+
+// Iterative 
+template<typename node>
+struct SegmentTree {
+    int n;
+    vector<node> t;
+
+    SegmentTree(int N) {
+        n = N;
+        t.resize(N << 1);
+    }
+
+    void set(int idx, int val) {
+        idx += n;
+        t[idx] = node(val);
+        for(; idx > 1; idx >>= 1) {
+            t[idx >> 1].merge(t[idx], t[idx ^ 1]);
+        }
+    }
+
+    node query(int start, int end) {
+        node res = node();
+        for(start += n, end += n; start < end; start >>= 1, end >>= 1) {
+            if(start & 1) res.merge(res, t[start++]);
+            if(end & 1) res.merge(res, t[--end]);
+        }
+        return res;
+    }
+
+};
+
+struct Node {
+    int sum;
+    Node() {
+        sum = 0;
+    }
+    Node(int val) {
+        sum = val;
+    }
+    void merge(Node &a, Node &b) {
+        sum = a.sum + b.sum;
+    }
+};
