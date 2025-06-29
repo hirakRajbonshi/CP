@@ -156,6 +156,14 @@ struct SegmentTree {
         }
     }
 
+    // This is also correct
+    // void set(int idx, int val) {
+    //     for(t[idx += n] = node(val); idx >>= 1; ) {
+    //         t[idx].merge(t[idx << 1], t[idx << 1 | 1]);
+    //     }
+    // }
+
+    // [start, end)
     node query(int start, int end) {
         node res = node();
         for(start += n, end += n; start < end; start >>= 1, end >>= 1) {
