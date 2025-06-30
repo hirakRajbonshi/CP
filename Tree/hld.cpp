@@ -30,8 +30,8 @@ namespace sgtree {
 
 int dfs_sz(int v, int p) {
     sz[v] = 1;
+    depth[v] = depth[p] + 1;
     for(auto &u : adj[v]) if(u ^ p) {
-        depth[u] = depth[v] + 1;
         sz[v] += dfs_sz(u, v);
     }
     sort(adj[v].begin(), adj[v].end(), [&] (int &i, int &j) {
