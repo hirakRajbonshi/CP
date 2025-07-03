@@ -13,6 +13,10 @@ struct SegmentTree {
         n = N;
     }
 
+    SegmentTree(vector<int> &v) : SegmentTree((int)v.size()) {
+        build(v, 1, 0, n - 1);
+    }
+
     void print(int id, int l, int r) {
         debug(l, r)
         t[id].print();
@@ -24,8 +28,7 @@ struct SegmentTree {
 
     void build(vector<int> &a, int id, int l, int r) {
         if(l == r) {
-            t[id].mx = a[l];
-            t[id].mn = a[l];
+            t[id] = node(a[l]);
             return;
         }
         int mid = (l+r)/2;
@@ -37,8 +40,7 @@ struct SegmentTree {
     void update(int id, int l, int r, int pos, int val) {
         if(pos < l || pos > r) return; 
         if(l == r) {
-            t[id].mn = val;
-            t[id].mx = val;
+            t[id] = node(val);
             return;
         }
         int mid = (l+r)/2;
@@ -57,19 +59,25 @@ struct SegmentTree {
         res.merge(left, right);
         return res;
     }
+
+    
     void update(int pos, int val) {
         update(1, 0, n-1, pos, val);
     }
     int query(int l, int r) {
         node res = query(1, 0, n-1, l, r);
-        return res.mx - res.mn;
+        return res.mx;
     }
 };
+
 struct node {
     int mn, mx;
     node() {
         mn = INT_MAX;
         mx = INT_MIN;
+    }
+    node(int val) {
+        mn = mx = val;
     }
     void merge(node &a, node &b) {
         mn = min(a.mn, b.mn);
