@@ -104,3 +104,117 @@ int main() {
     st.update(0, 2, 2);
     cout << st.query(0, 2) << endl;
 }
+
+
+
+
+
+
+
+
+
+// hopefully correct
+template<typename node>
+struct SegmentTree {
+    int n;
+    vector<node> t;
+
+    SegmentTree(int N) {
+        t.resize(N << 2 | 3);
+        n = N;
+    }
+    SegmentTree(vector<int> &a) : SegmentTree((int)a.size()) {
+        build(a, 1, 0, n - 1);
+    }
+
+    void build(vector<int>& a, int id, int l, int r) {
+        if (l == r) {
+            t[id] = node(a[l]);
+        } else {
+            int m = l + r >> 1, idL = id << 1, idR = id << 1 | 1;
+            build(a, idL, l, m);
+            build(a, idR, m + 1, r);
+            t[id].merge(t[idL], t[idR]);
+        }
+    }
+
+
+    void push(int id, int l, int r) {
+        if (!t[id].isPending()) return;
+        if (l == r) {
+            t[id].apply(l, r);
+            return;
+        }
+        int idL = id << 1, idR = id << 1 | 1;
+        int val = t[id].pending;
+        t[id].apply(l, r);
+        t[idL].set(val), t[idR].set(val);
+        t[id].claer();
+
+    }
+    void update(int id, int l, int r, int lq, int rq, int val) {
+        push(id, l, r);
+        if (lq > r || l > rq) return;
+        if (lq <= l && r <= rq) {
+            t[id].set(val);
+            push(id, l, r);
+            return;
+        }
+        int idL = id << 1, idR = id << 1 | 1;
+        int m = l + r >> 1;
+        update(idL, l, m, lq, rq, val);
+        update(idR, m + 1, r, lq, rq, val);
+        t[id].merge(t[idL], t[idR]);
+    }
+
+    node query(int id, int l, int r, int lq, int rq) {
+        push(id, l, r);
+        if (lq > r || l > rq) return node();
+        if (lq <= l && r <= rq) {
+            return t[id];
+        }
+        int m = l + r >> 1;
+        int idL = id << 1, idR = id << 1 | 1;
+        node res = node();
+        node left = query(idL, l, m, lq, rq);
+        node right = query(idR, m + 1, r, lq, rq); 
+        res.merge(left, right);
+        return res;
+    }   
+
+
+    void update(int l, int r, int val) {
+        update(1, 0, n - 1, l, r, val);
+    }
+    int query(int l, int r) {
+        node res = query(1, 0, n - 1, l, r);
+        return res.sum; // 
+    }
+
+};
+
+struct Node {
+    int sum, pending;
+    Node() {
+        sum = pending = 0;
+    }
+    Node(int val) {
+        sum = val, pending = 0;
+    }
+    bool isPending() {
+        return pending; // change the condition accordingly
+    }
+    void claer() {
+        pending = 0; // 
+    }
+    void merge(Node &a, Node &b) {
+        sum = a.sum + b.sum;
+    }
+    void set(int val) {
+        pending += val; //
+    }
+    void apply(int l, int r) {
+        sum += (r - l + 1) * pending; // how to apply the pending 
+        claer();
+    }
+};
