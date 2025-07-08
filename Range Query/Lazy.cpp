@@ -113,7 +113,6 @@ int main() {
 
 
 
-// hopefully correct
 template<typename node>
 struct SegmentTree {
     int n;
@@ -140,30 +139,28 @@ struct SegmentTree {
 
 
     void push(int id, int l, int r) {
-        if (!t[id].isPending()) return;
         if (l == r) {
             t[id].apply(l, r);
             return;
         }
         int idL = id << 1, idR = id << 1 | 1;
-        int val = t[id].pending;
+        t[idL].set(t[id]);
+        t[idR].set(t[id]);
         t[id].apply(l, r);
-        t[idL].set(val), t[idR].set(val);
-        t[id].claer();
 
     }
-    void update(int id, int l, int r, int lq, int rq, int val) {
+    void update(int id, int l, int r, int lq, int rq, int val, int type) { // here
         push(id, l, r);
         if (lq > r || l > rq) return;
         if (lq <= l && r <= rq) {
-            t[id].set(val);
+            t[id].set(type, val); // here
             push(id, l, r);
             return;
         }
         int idL = id << 1, idR = id << 1 | 1;
         int m = l + r >> 1;
-        update(idL, l, m, lq, rq, val);
-        update(idR, m + 1, r, lq, rq, val);
+        update(idL, l, m, lq, rq, val, type);
+        update(idR, m + 1, r, lq, rq, val, type);
         t[id].merge(t[idL], t[idR]);
     }
 
@@ -183,38 +180,58 @@ struct SegmentTree {
     }   
 
 
-    void update(int l, int r, int val) {
-        update(1, 0, n - 1, l, r, val);
+    void update(int l, int r, int val, int type) { // here
+        update(1, 0, n - 1, l, r, val, type);
     }
     int query(int l, int r) {
         node res = query(1, 0, n - 1, l, r);
-        return res.sum; // 
+        return res.sum; // here
     }
 
 };
 
 struct Node {
-    int sum, pending;
+    int sum;
+    int pendingSet, pendingInc;
     Node() {
-        sum = pending = 0;
+        sum = 0;
+        pendingSet = 0;
+        pendingInc = 0;
     }
-    Node(int val) {
-        sum = val, pending = 0;
-    }
-    bool isPending() {
-        return pending; // change the condition accordingly
-    }
-    void claer() {
-        pending = 0; // 
+    Node(int &val) : Node() {
+        sum = val;
     }
     void merge(Node &a, Node &b) {
         sum = a.sum + b.sum;
     }
-    void set(int val) {
-        pending += val; //
+    void set(Node &par) {
+        if (par.pendingSet) {
+            pendingSet = par.pendingSet;
+            pendingInc = 0;
+        } else if(par.pendingInc) {
+            if (pendingSet) {
+                pendingSet += par.pendingInc;
+            } else {
+                pendingInc += par.pendingInc;
+            }
+        }
+    }
+    void set(int type, int val) {
+        if (type == 1) {
+            pendingSet = val;
+            pendingInc = 0;
+        } else {
+            if (pendingSet) pendingSet += val;
+            else pendingInc += val;
+        }
     }
     void apply(int l, int r) {
-        sum += (r - l + 1) * pending; // how to apply the pending 
-        claer();
+        if (pendingSet) {
+            sum = (r - l + 1) * pendingSet;
+            pendingSet = 0;
+        } else if(pendingInc) {
+            sum += (r - l + 1) * pendingInc;
+            pendingInc = 0;
+        }
     }
 };
