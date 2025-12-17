@@ -2,6 +2,7 @@
 *.txt
 *.exe
 
+
 #ignore all the files inside this 
 problem_create/2025/*
 

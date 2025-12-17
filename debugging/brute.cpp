@@ -1,34 +1,95 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define int long long
-#define ll long long
-void solve()
+
+struct FenwickTree
 {
     int n;
-    cin >> n;
+    vector<int> bit;
+    FenwickTree(int n)
+    {
+        this->n = n;
+        bit.assign(n, 0);
+    }
+    FenwickTree(vector<int> const &a) : FenwickTree(a.size())
+    {
+        for (size_t i = 0; i < a.size(); i++)
+            add(i, a[i]);
+    }
+    int sum(int r)
+    {
+        int ret = 0;
+        for (; r >= 0; r = (r & (r + 1)) - 1)
+            ret += bit[r];
+        return ret;
+    }
+    int sum(int l, int r)
+    {
+        return sum(r) - sum(l - 1);
+    }
+    void add(int idx, int delta)
+    {
+        for (; idx < n; idx = idx | (idx + 1))
+            bit[idx] += delta;
+    }
+};
+
+void solve()
+{
+    int n, k;
+    cin >> n >> k;
     string s;
     cin >> s;
-    set<string> st;
-    st.insert(s);
+
+    vector<set<int>> at(26);
     for (int i = 0; i < n; i++)
     {
-        for (int j = i + 1; j < n; j++)
+        at[s[i] - 'a'].insert(i);
+    }
+    vector<int> ans;
+    FenwickTree bit(n);
+    for (int i = 0; i < n; i++)
+        bit.add(i, 1);
+    int rem = k, start = 0;
+    for (int q = 0; q < n / k; q++)
+    {
+        start = -1;
+        rem = k;
+        vector<int> v;
+        for (int j = 0; j < k; j++)
         {
-            string str = s.substr(0, i);
-            // debug(str)
-            str += s.substr(i + 1, j - i);
-            str += s[i];
-            str += s.substr(j + 1);
-            st.insert(str);
+            for (int i = 0; i < 26; i++)
+            {
+                auto it = at[i].upper_bound(start);
+                if (it == at[i].end())
+                    continue;
+                int sum = bit.sum(n - 1 - *it);
+                if (sum >= rem)
+                {
+                    ans.push_back(*it);
+                    start = *it;
+                    v.push_back(i);
+                    rem--;
+                    break;
+                }
+            }
+        }
+        reverse(v.begin(), v.end());
+        int p = n + 1;
+        for (auto i : v)
+        {
+            auto it = prev(at[i].lower_bound(p));
+            p = *it;
+            bit.add(n - 1 - *it, -1);
+            at[i].erase(it);
         }
     }
-    string ans = *st.begin();
-    cout << ans << "\n";
+    for (int &e : ans)
+        cout << s[e];
+    cout << "\n";
 }
-int32_t main()
+int main()
 {
-    // freopen("input.txt", "r", stdin);
-    // freopen("output2.txt", "w", stdout);
-
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     solve();
 }
