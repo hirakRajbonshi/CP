@@ -57,15 +57,15 @@ int f(int n, int x) {
     if(x > 1) a.push_back(x);
     int m = a.size();
     int cnt = 0;
-    for(int mask = 0; mask < (1ll << mask); mask++) {
+    for(int mask = 1; mask < (1ll << m); mask++) {
         int pro = 1;
         for(int i = 0; i < m; i++) {
             if(mask & (1 << i)) {
                 pro *= a[i];
             }
         }
-        int sign = __builtin_popcount(mask) & 1 ? -1 : 1;
+        int sign = __builtin_popcount(mask) & 1 ? 1 : -1;
         cnt += sign * (n/pro);
     }
-    return cnt;
+    return n - cnt;
 }
