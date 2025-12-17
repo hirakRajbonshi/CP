@@ -96,3 +96,83 @@ void solve() {
         }
     }
 }
+
+
+// EyadBT's HLD
+struct HLD{
+    vector<vector<int>> adj;
+    vector<int> sz, head, par, depth, ve, in, out;
+    int n;
+    int Time = -1;
+    HLD() {}
+    HLD(int n) : n(n + 1){
+        n++;
+        adj.resize(n);
+        sz.resize(n);
+        head.resize(n);
+        par.resize(n);
+        depth.resize(n);
+        in.resize(n);
+        out.resize(n);
+    }
+    void add_edge(int u, int v){
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    void build(int r = 1){
+        init(r, r);
+        DFS(r, r, r);
+    }
+    void init(int u, int p, int d = 0){
+        sz[u] = 1;
+        par[u] = p;
+        depth[u] = d;
+        for(int v : adj[u]){
+            if(v == p) continue;
+            init(v, u, d + 1);
+            sz[u] += sz[v];
+        }
+    }
+ 
+    void DFS(int u, int p, int h){
+        int mx = 0, nd = -1;
+        head[u] = h;
+        ve.push_back(u);
+        in[u] = ++Time;
+        for(int v : adj[u]){
+            if(v == p) continue;
+            if(sz[v] > mx){
+                mx = sz[v];
+                nd = v;
+            }
+        }
+        if(nd != -1) DFS(nd, u, h);
+        for(int v : adj[u]){
+            if(v == p || v == nd) continue;
+            DFS(v, u, v);
+        }
+        out[u] = Time;
+    }
+    
+    bool is_parent(int u, int v){
+        return in[v] >= in[u] && in[v] <= out[u];
+    }
+ 
+    int jump(int u, int k){
+        k = min(k, depth[u]);
+        while(in[u] - in[head[u]] < k){
+            k -= in[u] - in[head[u]] + 1;
+            u = par[head[u]];
+        }
+        return ve[in[u] - k];
+    }
+ 
+    int LCA(int u, int v){
+        while(head[u] != head[v]){
+            if(depth[head[u]] < depth[head[v]]) swap(u, v);
+            u = par[head[u]];
+        }
+        if(depth[u] < depth[v]) return u;
+        return v;
+    }
+} t;
