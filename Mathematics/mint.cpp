@@ -178,7 +178,7 @@ struct Factorials
     Mint P(int n, int r)
     {
         assert(n >= 0 || r >= 0 || n >= r);
-        return fact[n] * invf[r];
+        return fact[n] * invf[n - r];
     }
 
 };
