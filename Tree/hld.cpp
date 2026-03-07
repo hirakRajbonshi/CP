@@ -176,3 +176,111 @@ struct HLD{
         return v;
     }
 } t;
+
+
+
+
+// 2026
+struct SegmentTree {
+    int n;
+    vector<int> tree;
+    int merge(int a, int b) { return a + b; }
+
+    SegmentTree(int _n) {
+        n = _n;
+        tree.resize(n << 1);
+    }
+    SegmentTree(const vector<int>& a) {
+        n = a.size();
+        tree.resize(n << 1);
+        for (int i = 0; i < n; i++) tree[i + n] = a[i];
+        for (int i = n - 1; i > 0; i--) tree[i] = merge(tree[i << 1], tree[i << 1 | 1]);
+    }
+    void update(int idx, int v) {
+        idx += n;
+        tree[idx] = v;
+        while (idx > 1) {
+            tree[idx >> 1] = merge(tree[idx], tree[idx ^ 1]);
+            idx >>= 1;
+        }
+    }
+    int query(int l, int r) {
+        int sum = 0;
+        for (l += n, r += n; l <= r; l >>= 1, r >>= 1) {
+            if (l & 1) sum = merge(sum, tree[l++]);
+            if (!(r & 1)) sum = merge(sum, tree[r--]);
+        }        
+        return sum;
+    }
+};
+
+struct HLD {
+    int n;
+    vector<vector<int>> adj;
+    vector<int> depth, size, parent, heavy, head, pos, a, arr;
+    int cur;
+
+    HLD(int _n) {
+        n = _n;
+        adj.assign(n + 1, vector<int>());
+        depth.assign(n + 1, 0);
+        size.assign(n + 1, 0);
+        parent.assign(n + 1, 0);
+        heavy.assign(n + 1, -1); // heavy[v] = heavy child of v
+        head.assign(n + 1, 0); // head[v] = top most node of the heavy chain of v
+        pos.assign(n + 1, 0);
+        arr.assign(n, 0);
+        a.assign(n + 1, 0);
+        cur = 0; 
+    }
+
+    void add_edge(int u, int v) { adj[u].push_back(v); adj[v].push_back(u); }
+
+    int dfs(int v, int p) {
+        parent[v] = p;
+        size[v] = 1;
+        int mx = -1;
+        heavy[v] = -1;
+        for (int &u : adj[v]) if (u != p) {
+            depth[u] = depth[v] + 1;
+            int sz = dfs(u, v);
+            size[v] += sz;
+            if (sz > mx) {
+                mx = sz;
+                heavy[v] = u;
+            }
+        }
+        return size[v];
+    }
+
+    void dfs_hld(int v, int h) {
+        head[v] = h;
+        pos[v] = cur;
+        arr[cur] = a[v];
+        cur++;
+        if (~heavy[v]) {
+            dfs_hld(heavy[v], h);
+            for (int &u : adj[v]) if (u != parent[v] && u != heavy[v]) 
+                dfs_hld(u, u);
+        }
+    }
+    void build() {
+        dfs(1, 0);
+        dfs_hld(1, 1);
+    }
+    int query(int u, int v, SegmentTree &st) {
+        int res = 0;
+        while (head[u] != head[v]) {
+            if (depth[head[u]] > depth[head[v]]) {
+                swap(u, v); // now v is lower so gonna move v up
+            }
+            // segment tree query from head[v] to v
+            res = st.merge(res, st.query(pos[head[v]], pos[v]));
+            v = parent[head[v]];
+        }
+        if (depth[u] > depth[v]) swap(u, v);
+        // segment tree query from u to v
+        res =  st.merge(res, st.query(pos[u], pos[v]));
+        return res;
+    }
+};
